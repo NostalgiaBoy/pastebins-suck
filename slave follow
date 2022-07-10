@@ -1,0 +1,57 @@
+local partnername = _G.parternamef
+
+local player = game.Players.LocalPlayer
+local c = player.Character
+
+local partnerplayer = nil
+local partnerc = nil
+
+local PlayerModule = require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"))
+local Controls = PlayerModule:GetControls()
+Controls:Enable()
+
+
+
+local function getPlayer(name)
+    for i, v in pairs(game.Players:GetChildren()) do
+        if v.DisplayName == name then
+            return v
+        end
+    end
+end
+partnerplayer = getPlayer(partnername)
+partnerc = partnerplayer.Character
+
+local function getDistance()
+	return (partnerc.HumanoidRootPart.Position - c.HumanoidRootPart.Position).magnitude
+end
+
+local function chat(msg)
+    game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+end
+
+local distance = 13
+local chattable = {"i'm sorry! 🥺", "i'm really sorry! 😣", "please don't punish me 🥺", "i'll stay close, i promise! 😣", "i'm sorry, please don't punish me 😖", "i'm really sorry, i promise to stay next to you "..partnername.." 😣", "i'm a good boy, i swear! 😣"}
+
+while task.wait() do
+    
+    if _G.stopfollow == true then
+        
+        break
+    end
+    
+    if getDistance() > distance then
+        Controls:Disable()
+        c.Humanoid.WalkToPoint = partnerc.HumanoidRootPart.Position
+        c.Humanoid.WalkSpeed = 22
+        task.wait(0.5)
+        chat(chattable[math.random(1, #chattable)])
+    end
+    if getDistance() < distance then
+        c.Humanoid.WalkSpeed = 16
+        c.Humanoid.WalkToPoint = c.HumanoidRootPart.Position
+        Controls:Enable()
+    end
+    
+end
+
